@@ -40,6 +40,25 @@ console.log(UTF8_Encoding("Foo © bar 𝌆 baz ☃ qux"));
 # 写一个正则表达式，匹配所有的字符串直接量，单引号和双引号
 
 ```javascript
-// DoubleStringCharacters
+// 空字符串
+const noneString = /^""$/
+/* DoubleStringCharacter 
+SourceCharacter but not one of " or \ or LineTerminator
+U+000A U+000D U+2028 U+2029
+*/
+let  DoubleStringCharacter = /[^"\\\u000a\u000D\u2028\u2029]+/
+/*
+<LS> U+2028
+<PS> u+2029
+*/
+
+
+```
+
+```
+Code Point
+U+000A U+000D U+2028 U+2029
+Unicode Name Abbreviation
+LINE FEED (LF) <LF> CARRIAGE RETURN (CR) <CR> LINE SEPARATOR <LS> PARAGRAPH SEPARATOR <PS>
 ```
 
