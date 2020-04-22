@@ -51,6 +51,12 @@ let  DoubleStringCharacter = /[^"\\\u000a\u000D\u2028\u2029]+/
 <LS> U+2028
 <PS> u+2029
 */
+//SingleEscapeCharacter
+const SingleEscapeCharacter = /['"\\bfnrtv]/
+// NonEscapeCharacter
+const NonEscapeCharacter = /[^'"\\bfnrtv0123456789xu\u000a\u000D\u2028\u2029]/
+// CharacterEscapeSequence
+const CharacterEscapeSequence = /[^0123456789xu\u000a\u000D\u2028\u2029]]/
 
 
 ```
