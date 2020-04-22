@@ -248,9 +248,127 @@ var \u5389\u5bb3 = 2
     - <NBSP> 用于不断词的
     - <ZWNBSP>
     - <USP>
+    
   - LineTerminator // 换行
+
   - Comment // 注释
+
+    - //
+    - /**/ 没有嵌套
+
   - Token // 词
 
+    - Punctuator
+
+      > 符号
+
+    - Keywords
+
+    - *IdentifierName* 
+
+      - Keywords
+      - Identifier
+      - *FutureReservedWord*
+      - *NullLiteral*
+      - *BooleanLiteral*
+
+      
+
+    - Literal
+
+      > 直接量
+
+    > Punctuator和Keywords 帮助程序形成结构
+    >
+    > Identifier 和Literal 用户创造的
+
 /ufeff BOM <ZWNBSP> zero width no break space
+
+
+
+```
+IdentifierReference: Identifier
+Identifier: IdentifierName but not ReservedWord
+IdentifierName :: 
+		IdentifierStart
+		IdentifierName IdentifierPart
+IdentifierStart :: 
+		UnicodeIDStart
+		$
+		_
+		\ UnicodeEscapeSequence
+IdentifierPart :: 
+		UnicodeIDContinue
+		$
+		\ UnicodeEscapeSequence <ZWNJ>
+		<ZWJ>
+```
+
+
+
+### Number
+
+- *DecimalLiteral*
+
+-  *BinaryIntegerLiteral*
+- *OctalIntegerLiteral*
+- *HexIntegerLiteral*
+- *LegacyOctalIntegerLiteral*
+
+```javascript
+/*DecimalLiteral*/
+0,0.,.1,1.1,1e3
+/*OctalIntegerLiteral*/
+0o10 //8
+0o11 //9
+/*BinaryIntegerLiteral*/
+0b001 //1
+0b002 //2
+/*HexIntegerLiteral*/
+0xff
+```
+
+#### DecimalLiteral
+
+- Safe Integer
+- Float Compare
+
+```javascript
+Math.abs(0.1+0.2-0.3)<=Number.EPSILON
+97 .toString(2) //在数字后加空格,避免97.的小数
+```
+
+
+
+### String
+
+- Character
+- Code point
+- Encoding
+
+> - ASCLL
+> - Unicode
+> - UCS U+0000 - U+FFFF
+>   - Unicode BMP 范围
+> - GB
+>   - GB2312
+>   - GBK(GB13000)
+>   - GB18030
+> - ISO-8859
+> - BIG5
+
+#### Encoding
+
+- utf8
+- utf16
+
+#### Grammar
+
+```javascript
+'abc'
+"abc"
+`abc`
+```
+
+
 
