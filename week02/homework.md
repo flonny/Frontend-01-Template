@@ -40,6 +40,8 @@ console.log(UTF8_Encoding("Foo © bar 𝌆 baz ☃ qux"));
 # 写一个正则表达式，匹配所有的字符串直接量，单引号和双引号
 
 ```javascript
-// DoubleStringCharacters
+// 空字符串
+const spaceString  = /^""$/
+
 ```
 
