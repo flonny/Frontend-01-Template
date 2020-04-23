@@ -42,6 +42,10 @@ console.log(UTF8_Encoding("Foo © bar 𝌆 baz ☃ qux"));
 ```javascript
 // 空字符串
 const spaceString  = /^""$/
+// SourceCharacter but not one of " or \ or LineTerminator
+const SourceCharacterNotSomeChar = /[^"\\\u000A\u000d\u2028\u2029]/
+// \ EscapeSequence  
+const EscapeSequence = /^\\['"\\bfnrtv[^0-9xu\u000A\u000d\u2028\u2029]/
 
 ```
 
