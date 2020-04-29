@@ -1,6 +1,11 @@
 export function converStringToNumber(string, x = 10) {
+  let numberString = string
+  if(string.indexOf('e') !== -1&&x!=10) {
+    numberString = ''+converStringToNumber(string,10)
+    console.log('numberString',numberString)
+  }
   const charStr = "0123456789abcdef";
-  var chars = string.split("");
+  var chars = numberString.split("");
   let number = 0;
   let i = 0;
   while (i < chars.length && chars[i] != "." && chars[i] !== "e") {
