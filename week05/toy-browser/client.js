@@ -43,8 +43,10 @@ class Request {
       }
       connection.on("data", (data) => {
         // new Response(data);
+        console.log(data.toString());
         parser.receive(data.toString());
-        console.log(parser.statusLine)
+        console.log(parser.statusLine);
+        console.log(parser.headers);
         // resolve(`${data.toString()}`);
         // console.log(parser.statusLine)
         connection.end();
@@ -62,7 +64,6 @@ class Request {
   }
 }
 
-
 class Response {}
 
 class ResponseParser {
@@ -70,9 +71,11 @@ class ResponseParser {
     this.WAITING_STATUS_LINE = 0;
     this.WAITING_STATUS_LINE_END = 1;
     this.WAITING_HEADER_NAME = 2;
-    this.WAITING_HEADER_VALUE = 3;
-    this.WAITING_HEADER_LINE_END = 4;
-    this.WAITING_HEADER_BLOCK_END = 5;
+    this.WAITING_HEADER_SPACE = 4;
+    this.WAITING_HEADER_VALUE = 5;
+    this.WAITING_HEADER_LINE_END = 6;
+    this.WAITING_HEADER_BLOCK_END = 7;
+    this.WAITING_BODY = 8;
 
     this.current = this.WAITING_STATUS_LINE;
     this.statusLine = "";
@@ -91,6 +94,37 @@ class ResponseParser {
         this.current = this.WAITING_STATUS_LINE_END;
       } else {
         this.statusLine += char;
+      }
+    } else if (this.current === this.WAITING_STATUS_LINE_END) {
+      if (char === "\n") {
+        this.current = this.WAITING_HEADER_NAME;
+      }
+    } else if (this.current === this.WAITING_HEADER_NAME) {
+      if (char === "\r") {
+        this.current = this.WAITING_BODY;
+      }
+      if (char === ":") {
+        this.current = this.WAITING_HEADER_SPACE;
+      } else {
+        this.headerName += char;
+      }
+    } else if (this.current === this.WAITING_HEADER_SPACE) {
+      if (char === " ") {
+        this.current = this.WAITING_HEADER_VALUE;
+      }
+    } else if (this.current === this.WAITING_HEADER_VALUE) {
+      if (char === "\r") {
+        this.current = this.WAITING_HEADER_LINE_END;
+        this.headers[this.headerName] = this.headerValue;
+        this.headerName = "";
+        this.headerValue = "";
+      } else {
+        this.headerValue += char;
+      }
+    } else if (this.current === this.WAITING_HEADER_LINE_END) {
+      if (char === "\n") {
+        console.log("\\n");
+        this.current = this.WAITING_HEADER_NAME;
       }
     }
   }
