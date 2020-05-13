@@ -1,8 +1,5 @@
 const net = require("net");
 class Request {
-  // method url=host+port+path
-  //body: k/v
-  //header
   constructor({ methods, host, port, path, body, headers }) {
     this.methods = methods || "GET";
     this.host = host;
@@ -28,7 +25,6 @@ class Request {
       .map((key) => `${key}: ${this.headers[key]}`)
       .join("\r\n")}\r\n\r\n${this.bodyText}`;
   }
-  open({ methods, url }) {}
   send(connection) {
     return new Promise((resolve, reject) => {
       if (connection) {
@@ -41,10 +37,15 @@ class Request {
           })
       }
       connection.on('data', (data) => {
-        console.log(data.toString());
-        resolve(`123123123${data.toString()}`)
+        resolve(`${data.toString()}`)
         connection.end();
       });
+      
+      connection.on('error', (error) => {
+        reject(error)
+        connection.end();
+      });
+      
       connection.on('end', () => {
         console.log('disconnected from server');
       });
@@ -69,22 +70,6 @@ void async function () {
   console.log(response)
 }();
 class Response {}
-// POST / HTTP/1.1
-// Host: localhost:8088
-// Connection: keep-alive
-// Pragma: no-cache
-// Cache-Control: no-cache
-/*const client = net.createConnection({
-  host:"127.0.0.1",
-  port: 8088 }, () => {
-  // 'connect' listener.
-  console.log('connected to server!');
-  client.write(req.toString())
-});
-client.on('data', (data) => {
-  console.log(data.toString());
-  client.end();
-});
-client.on('end', () => {
-  console.log('disconnected from server');
-});*/
+class ResponseParser {
+
+}
