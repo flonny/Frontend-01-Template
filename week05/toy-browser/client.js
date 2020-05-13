@@ -43,10 +43,11 @@ class Request {
       }
       connection.on("data", (data) => {
         // new Response(data);
+        console.log("\n\n------ begin:  ------");
         console.log(data.toString());
+        console.log("------ end:  ------\n\n");
+
         parser.receive(data.toString());
-        console.log(parser.statusLine);
-        console.log(parser.headers);
         // resolve(`${data.toString()}`);
         // console.log(parser.statusLine)
         connection.end();
@@ -71,11 +72,11 @@ class ResponseParser {
     this.WAITING_STATUS_LINE = 0;
     this.WAITING_STATUS_LINE_END = 1;
     this.WAITING_HEADER_NAME = 2;
-    this.WAITING_HEADER_SPACE = 4;
-    this.WAITING_HEADER_VALUE = 5;
-    this.WAITING_HEADER_LINE_END = 6;
-    this.WAITING_HEADER_BLOCK_END = 7;
-    this.WAITING_BODY = 8;
+    this.WAITING_HEADER_SPACE = 3;
+    this.WAITING_HEADER_VALUE = 4;
+    this.WAITING_HEADER_LINE_END = 5;
+    this.WAITING_HEADER_BLOCK_END = 6;
+    this.WAITING_BODY = 7;
 
     this.current = this.WAITING_STATUS_LINE;
     this.statusLine = "";
@@ -101,7 +102,7 @@ class ResponseParser {
       }
     } else if (this.current === this.WAITING_HEADER_NAME) {
       if (char === "\r") {
-        this.current = this.WAITING_BODY;
+        this.current = this.WAITING_HEADER_BLOCK_END;
       }
       if (char === ":") {
         this.current = this.WAITING_HEADER_SPACE;
@@ -123,13 +124,28 @@ class ResponseParser {
       }
     } else if (this.current === this.WAITING_HEADER_LINE_END) {
       if (char === "\n") {
-        console.log("\\n");
         this.current = this.WAITING_HEADER_NAME;
       }
+    } else if (this.current === this.WAITING_HEADER_BLOCK_END) {
+      if (this.headers["Transfer-Encoding"] === "chunked") {
+        this.bodyParser = new TrunkedBodyparser();
+      }
+      if (char === "\n") {
+        this.current = this.WAITING_BODY;
+      }
+    } else if (this.current === this.WAITING_BODY) {
+      this.bodyParser.receiveChar(char);
     }
   }
 }
-class TrunkedBodyparser {}
+class TrunkedBodyparser {
+  constructor() {
+    this.bodyText = "";
+  }
+  receiveChar(char) {
+    console.log(JSON.stringify(char));
+  }
+}
 
 void (async function () {
   let req = new Request({
