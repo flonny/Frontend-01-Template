@@ -1,7 +1,7 @@
 const http = require('http')
 const server = http.createServer((req, res) => {
   console.log('\n\n------ begin: request ------')
-  console.log(res.data)
+  console.log(req.headers)
   console.log('------ end: res ------\n\n')
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
