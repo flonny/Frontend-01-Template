@@ -174,8 +174,8 @@ class TrunkedBodyparser {
         }
        
       }else {
-        this.length*=10;
-        this.length +=char.charCodeAt(0) - '0'.charCodeAt(0)
+        this.length *= 16;
+        this.length += parseInt(char, 16);
       }
 
     } else if (this.current === this.WAITING_LENGTH_LINE_END) {
@@ -211,5 +211,6 @@ void (async function () {
     },
   });
   let response = await req.send();
+  let dom = parser.parseHTML(response.body);
   console.log(response);
 })();
