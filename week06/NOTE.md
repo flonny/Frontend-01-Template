@@ -1,3 +1,10 @@
+# 作业
+  1. 状态机 abababx
+    > ababbax.js
+  2. 未知的patten match string
+    > state.js
+  3. 浏览器
+    > browser[未完成]
 # 每周总结可以写在这里
 
 ## 概念
