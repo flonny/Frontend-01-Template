@@ -2,7 +2,7 @@
 const Request = require('./Request')
 const parse = require('./parse')
 const images = require("images");
-// const render  = require('./render')
+const render  = require('./render')
 class Response {
 }
 
