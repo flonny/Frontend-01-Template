@@ -61,3 +61,18 @@ S = 0*N^3 + 0*N^2 + 1*N^1 +1
   - :active
   - :focus
   - :target
+- 树结构
+  - :empty
+  - :nth-child()
+  - :nth-last-child()
+  - :first-child :last-child
+  - :only-child
+- 逻辑
+  - :not
+  - :where :has
+
+## 伪元素
+
+- ::before ::after
+- ::firstLine
+- ::first letter
