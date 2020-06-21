@@ -402,10 +402,7 @@ module.exports.parseHTML = function (html) {
   // console.log(JSON.stringify(stack,null," "))
   return stack[0];
 };
-iv>
-    </body>
-    </html>
- */
+
 const layout = require("./layout.js");
 
 function isASCIIAlpha(c) {

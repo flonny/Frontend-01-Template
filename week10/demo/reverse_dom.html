@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    html{
+      width: 1000000px;
+    }
+    body{
+      width: 100000px;
+    }
+    div{
+      background: red;
+      width: 50vw;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reverse dom</title>
+</head>
+<body>
+  <div id="a">
+    <span>1</span>
+    <p>2</p>
+    <b>3</b>
+    <div>4</div>
+  </div>
+  <script>
+    let element = document.getElementById('a')
+    function reverseChildren(element) {
+      var l=element.childNodes.length
+      while(l-->0) {
+        element.appendChild(element.childNodes[l])
+      }
+    }
+    reverseChildren(element)
+  </script>
+</body>
+</html>
