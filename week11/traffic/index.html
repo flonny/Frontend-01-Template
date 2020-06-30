@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>traffic light</title>
+    <style>
+      .traffic-light{
+        display: flex;
+        width: 600px;
+        justify-content: space-between;
+      }
+      .traffic-light span{
+        width: 100px;
+        height: 100px;
+        border-radius: 100%;
+        background: gray;
+      }
+      span.red-light{
+        background: red;
+      }
+      span.yellow-light{
+        background: yellow;
+      }
+      span.green-light{
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class ="traffic-light">
+      <span id="red-light" ></span>
+      <span id="yellow-light" ></span>
+      <span id="green-light" ></span>
+    </div>
+    <script>
+      function sleep(timeout) {
+        return new Promise((resolve, rejuct) => {
+          setTimeout(() => {
+            resolve('down')
+          }, timeout*1000);
+        })
+      }
+      async function  traffic () {
+        document.getElementById('green-light').setAttribute('class','green-light')
+        await sleep(10)
+        document.getElementById('green-light').removeAttribute('class')
+        document.getElementById('yellow-light').setAttribute('class','yellow-light')
+        await sleep(2)
+        document.getElementById('yellow-light').removeAttribute('class')
+        document.getElementById('red-light').setAttribute('class','red-light')
+        await sleep(5)
+        document.getElementById('red-light').removeAttribute('class')
+        traffic()
+      }
+      traffic()
+    </script>
+  </body>
+</html>
