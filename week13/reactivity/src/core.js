@@ -8,7 +8,7 @@ function hasOwnProp(obj, prop) {
 function getOwnPrototype(obj) {
   Object.getPrototypeOf(obj)
 }
-function reactive(obj) {
+export function reactive(obj) {
   if (reactiveDep.get(obj)) {
     return reactiveDep.get(obj)
   }
@@ -51,7 +51,7 @@ function reactive(obj) {
   reactiveDep.set(obj, proxy)
   return proxy
 }
-function effect(handler) {
+export function effect(handler) {
   handler()
   for (let useReactivity of useReactivities) {
     const [obj, prop] = useReactivity
