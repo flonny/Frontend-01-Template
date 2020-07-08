@@ -1,7 +1,7 @@
 let useReactivities = []
 let handlers = new Map()
 let reactiveDep = new Map()
-export function reactive(obj) {
+function reactive(obj) {
   if (reactiveDep.get(obj)) {
     return reactiveDep.get(obj)
   }
@@ -23,9 +23,6 @@ export function reactive(obj) {
       return newVal
     },
     has: function (obj, prop) {
-      if (prop[0] === '_') {
-        return false;
-      }
       if (typeof obj[prop] === 'string' || typeof obj[prop] === 'number') {
         useReactivities.push([obj, prop])
       }
@@ -41,13 +38,12 @@ export function reactive(obj) {
         }
       }
       return true;
-    }
+    },
   })
   reactiveDep.set(obj, proxy)
   return proxy
 }
-
-export function effect(handler) {
+function effect(handler) {
   handler()
   for (let useReactivity of useReactivities) {
     const [obj, prop] = useReactivity
@@ -61,11 +57,14 @@ export function effect(handler) {
   }
 }
 
+
 let dummy
-const obj = reactive({ prop: 'value' })
-effect(() => {dummy = 'prop' in obj })
-console.log(1, dummy)
-delete obj.prop
-console.log(2, dummy)
-obj.prop = 12
-console.log(3, dummy)
+const counter = reactive({ num: 0 })
+const parentCounter = reactive({ num: 2 })
+Object.setPrototypeOf(counter, parentCounter)
+effect(() => (dummy = counter.num))
+console.log(dummy)
+delete counter.num
+console.log(dummy)
+parentCounter.num = 4
+console.log(dummy)
