@@ -1,78 +1,55 @@
-let useReactivities = []
-let handlers = new Map()
-let reactiveDep = new Map()
-function hasOwnProp(obj, prop) {
-  // 直接obj.hasOwnProperty 会沿着原型链执行
-  return Object.prototype.hasOwnProperty.call(obj, prop)
-}
-function getOwnPrototype(obj) {
-  Object.getPrototypeOf(obj)
-}
+let ObjToProxy = new Map();
+let handlers = [];
+let keyType;
 function reactive(obj) {
-  if (reactiveDep.get(obj)) {
-    return reactiveDep.get(obj)
+  if (ObjToProxy.has(obj)) {
+    return ObjToProxy.get(obj);
   }
   let proxy = new Proxy(obj, {
-    get: function (obj, prop) {
-      useReactivities.push([obj, prop])
-      if (typeof obj[prop] === 'object') {
-        return reactive(obj[prop])
+    get(obj, prop) {
+      console.log(prop)
+      keyType = typeof prop;
+      if (typeof obj[prop] === "object") {
+        return reactive(obj[prop]);
       }
-      return prop in obj ? obj[prop] : void 0;
+      return Reflect.get(...arguments);
     },
-    set: function (obj, prop, newVal) {
-      obj[prop] = newVal
-      if (handlers.has(obj) && handlers.get(obj).has(prop)) {
-        for (let handler of handlers.get(obj).get(prop)) {
-          handler()
-        }
+    has(obj, prop) {
+      return Reflect.has(...arguments);
+    },
+    ownKeys(obj, prop) {
+      return Reflect.ownKeys(...arguments);
+    },
+    set(obj, prop) {
+      Reflect.set(...arguments);
+      for (let handler of handlers) {
+        handler();
       }
-      return newVal
+      return obj[prop];
     },
-    has: function (obj, prop) {
-      if (typeof obj[prop] === 'string' || typeof obj[prop] === 'number') {
-        useReactivities.push([obj, prop])
-      }
-      return prop in obj;
-    },
-    deleteProperty: function (obj, prop) {
-      if (handlers.get(obj) && handlers.get(obj).has(prop)) {
-        for (let handler of handlers.get(obj).get(prop)) {
-
-          if (prop in obj) {
-            delete obj[prop]
-          }
-          handler()
-        }
+    deleteProperty(obj, prop) {
+      Reflect.deleteProperty(obj, prop);
+      for (let handler of handlers) {
+        handler();
       }
       return true;
     },
-  })
-  reactiveDep.set(obj, proxy)
-  return proxy
+  });
+  ObjToProxy.set(obj, proxy);
+  return ObjToProxy.get(obj);
 }
 function effect(handler) {
-  handler()
-  for (let useReactivity of useReactivities) {
-    const [obj, prop] = useReactivity
-    if (!handlers.has(obj)) {
-      handlers.set(obj, new Map())
-    }
-    if (!handlers.get(obj).has(prop)) {
-      handlers.get(obj).set(prop, [])
-    }
-    handlers.get(obj).get(prop).push(handler)
+  handler();
+  if (keyType !== "symbol") {
+    handlers.push(handler);
   }
 }
 
-
-let dummy
-const counter = reactive({ num: 0 })
-const parentCounter = reactive({ num: 2 })
-Object.setPrototypeOf(counter, parentCounter)
-effect(() => { dummy = counter.num; console.log(dummy); })
-// console.log(dummy)
-delete counter.num
-// console.log(dummy)
-// parentCounter.num = 4
-// console.log(dummy)
+const key = Symbol.isConcatSpreadable;
+let dummy;
+const array = reactive([]);
+effect(() => (dummy = array[key]));
+console.log(array[key]);
+console.log(dummy);
+console.log((array[key] = 1));
+console.log(dummy);

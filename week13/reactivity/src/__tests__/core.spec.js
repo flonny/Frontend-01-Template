@@ -1,5 +1,17 @@
 import { reactive, effect } from '../core'
-
+describe('core/reactive', () => {
+  test('Object', () => {
+    const original = { foo: 1 }
+    const observed = reactive(original)
+    expect(observed).not.toBe(original)
+    // get
+    expect(observed.foo).toBe(1)
+    // has
+    expect('foo' in observed).toBe(true)
+    // ownKeys
+    expect(Object.keys(observed)).toEqual(['foo'])
+  })
+})
 describe('core/effect', () => {
   it('should run the passed function once (wrapped by a effect)', () => {
     const fnSpy = jest.fn(() => { })
@@ -80,5 +92,157 @@ describe('core/effect', () => {
     expect(dummy).toBe(4)
     counter.num = 3
     expect(dummy).toBe(3)
+  })
+
+  it('should observe has operations on the prototype chain', () => {
+    let dummy
+    const counter = reactive({ num: 0 })
+    const parentCounter = reactive({ num: 2 })
+    Object.setPrototypeOf(counter, parentCounter)
+    effect(() => (dummy = 'num' in counter))
+
+    expect(dummy).toBe(true)
+    delete counter.num
+    expect(dummy).toBe(true)
+    delete parentCounter.num
+    expect(dummy).toBe(false)
+    counter.num = 3
+    expect(dummy).toBe(true)
+  })
+
+  it('should observe inherited property accessors', () => {
+    let dummy, parentDummy, hiddenValue
+    const obj = reactive({})
+    const parent = reactive({
+      set prop(value) {
+        hiddenValue = value
+      },
+      get prop() {
+        return hiddenValue
+      }
+    })
+    Object.setPrototypeOf(obj, parent)
+    effect(() => (dummy = obj.prop))
+    effect(() => (parentDummy = parent.prop))
+    expect(dummy).toBe(undefined)
+    expect(parentDummy).toBe(undefined)
+    obj.prop = 4
+    expect(dummy).toBe(4)
+    // this doesn't work, should it?
+    // expect(parentDummy).toBe(4)
+    parent.prop = 2
+    expect(dummy).toBe(2)
+    expect(parentDummy).toBe(2)
+  })
+
+  it('should observe function call chains', () => {
+    let dummy
+    const counter = reactive({ num: 0 })
+    effect(() => (dummy = getNum()))
+
+    function getNum() {
+      return counter.num
+    }
+
+    expect(dummy).toBe(0)
+    counter.num = 2
+    expect(dummy).toBe(2)
+  })
+  it('should observe iteration', () => {
+    let dummy
+    const list = reactive(['Hello'])
+    effect(() => (dummy = list.join(' ')))
+
+    expect(dummy).toBe('Hello')
+    list.push('World!')
+    expect(dummy).toBe('Hello World!')
+    list.shift()
+    expect(dummy).toBe('World!')
+  })
+
+  it('should observe implicit array length changes', () => {
+    let dummy
+    const list = reactive(['Hello'])
+    effect(() => (dummy = list.join(' ')))
+
+    expect(dummy).toBe('Hello')
+    list[1] = 'World!'
+    expect(dummy).toBe('Hello World!')
+    list[3] = 'Hello!'
+    expect(dummy).toBe('Hello World!  Hello!')
+  })
+
+  it('should observe sparse array mutations', () => {
+    let dummy
+    const list = reactive([])
+    list[1] = 'World!'
+    effect(() => (dummy = list.join(' ')))
+
+    expect(dummy).toBe(' World!')
+    list[0] = 'Hello'
+    expect(dummy).toBe('Hello World!')
+    list.pop()
+    expect(dummy).toBe('Hello')
+  })
+  it('should observe enumeration', () => {
+    let dummy = 0
+    const numbers = reactive({ num1: 3 })
+    effect(() => {
+      dummy = 0
+      for (let key in numbers) {
+        dummy += numbers[key]
+      }
+    })
+
+    expect(dummy).toBe(3)
+    numbers.num2 = 4
+    expect(dummy).toBe(7)
+    delete numbers.num1
+    expect(dummy).toBe(4)
+  })
+  
+  
+
+
+  it('should observe symbol keyed properties', () => {
+    const key = Symbol('symbol keyed prop')
+    let dummy, hasDummy
+    const obj = reactive({ [key]: 'value' })
+    effect(() => (dummy = obj[key]))
+    effect(() => (hasDummy = key in obj))
+
+    expect(dummy).toBe('value')
+    expect(hasDummy).toBe(true)
+    obj[key] = 'newValue'
+    expect(dummy).toBe('newValue')
+    delete obj[key]
+    expect(dummy).toBe(undefined)
+    expect(hasDummy).toBe(false)
+  })
+
+  it('should not observe well-known symbol keyed properties', () => {
+    const key = Symbol.isConcatSpreadable
+    let dummy
+    const array = reactive([])
+    effect(() => (dummy = array[key]))
+
+    expect(array[key]).toBe(undefined)
+    expect(dummy).toBe(undefined)
+    array[key] = true
+    expect(array[key]).toBe(true)
+    expect(dummy).toBe(undefined)
+  })
+
+  it('should observe function valued properties', () => {
+    const oldFunc = () => {}
+    const newFunc = () => {}
+
+    let dummy
+    const obj = reactive({ func: oldFunc })
+    effect(() => (dummy = obj.func))
+
+    expect(dummy).toBe(oldFunc)
+    obj.func = newFunc
+    expect(dummy).toBe(newFunc)
   })
 })
