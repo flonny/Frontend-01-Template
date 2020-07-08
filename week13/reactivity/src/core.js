@@ -1,6 +1,13 @@
 let useReactivities = []
 let handlers = new Map()
 let reactiveDep = new Map()
+function hasOwnProp(obj, prop) {
+  // 直接obj.hasOwnProperty 会沿着原型链执行
+  return Object.prototype.hasOwnProperty.call(obj, prop)
+}
+function getOwnPrototype(obj) {
+  Object.getPrototypeOf(obj)
+}
 function reactive(obj) {
   if (reactiveDep.get(obj)) {
     return reactiveDep.get(obj)
@@ -31,6 +38,7 @@ function reactive(obj) {
     deleteProperty: function (obj, prop) {
       if (handlers.get(obj) && handlers.get(obj).has(prop)) {
         for (let handler of handlers.get(obj).get(prop)) {
+
           if (prop in obj) {
             delete obj[prop]
           }
@@ -62,9 +70,9 @@ let dummy
 const counter = reactive({ num: 0 })
 const parentCounter = reactive({ num: 2 })
 Object.setPrototypeOf(counter, parentCounter)
-effect(() => (dummy = counter.num))
-console.log(dummy)
+effect(() => { dummy = counter.num; console.log(dummy); })
+// console.log(dummy)
 delete counter.num
-console.log(dummy)
-parentCounter.num = 4
-console.log(dummy)
+// console.log(dummy)
+// parentCounter.num = 4
+// console.log(dummy)
