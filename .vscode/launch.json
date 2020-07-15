@@ -12,7 +12,7 @@
         "skipFiles": [
           "<node_internals>/**"
         ],
-        "program": "${workspaceFolder}/week13/reactivity/src/core.js",
+        "program": "${workspaceFolder}/week14/component/main.js",
       }
     ]
   }
