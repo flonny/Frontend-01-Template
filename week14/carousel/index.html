@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>carousel component</title>
     <style>
+        body {
+            text-align: center;
+        }
+
         .carousel {
+            overflow: hidden;
+
             width: 500px;
             height: 280px;
             white-space: nowrap;
@@ -49,9 +55,19 @@
                     let nextPositoin = (1 + position) % this.data.length
                     let current = this.root.childNodes[position];
                     let next = this.root.childNodes[nextPositoin];
-                    current.style.transform = `translateX(${-100-100 * position}%)`
-                    next.style.transform = `translateX(${-100 * nextPositoin}%)`
-                    position = nextPositoin
+                    current.style.transition = "ease 0s"
+                    next.style.transition = "ease 0s"
+                    
+                    current.style.transform = `translateX(${- 100 * position}%)`
+                    next.style.transform = `translateX(${100 - 100 * nextPositoin}%)`
+                    setTimeout(function () {
+                        current.style.transition = ""
+                        next.style.transition = ""
+                        current.style.transform = `translateX(${-100 - 100 * position}%)`
+                        next.style.transform = `translateX(${-100 * nextPositoin}%)`
+                        position = nextPositoin
+                    }, 16)
+
                     setTimeout(nextPic, 1000 * 2);
                 }
                 nextPic()
