@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>animation</title>
+    <style>
+        #el {
+            height: 100px;
+            width: 100px;
+            background: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="el"></div>
+    <script>
+           el.style.transition = "ease 6s"
+        function start() {
+            el.style.transform = "translate(300px,300px)"  
+        }
+        function stop() {
+            el.style.transition = 'none'
+            console.log(getComputedStyle(el,null))
+            el.style.transform = getComputedStyle(el,null).transform
+        }
+        // setTimeout(() => {
+         
+      
+        // }, 16);
+  
+        // el.style.transform = "translate(0,0)"
+    </script>
+</body>
+
+</html>

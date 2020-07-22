@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>animation</title>
+    <style>
+        #el {
+            height: 100px;
+            width: 100px;
+            background: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="el"></div>
+    <script src="./animation.js"></script>
+    <script>
+        let el = document.getElementById('el')
+        let t1 = new Timeline
+        t1.add(new Animation(el.style, "transform",v=>`translateX(${v}px)`, 0, 200, 5000))
+        t1.start()
+   </script>
+</body>
+
+</html>
