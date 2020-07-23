@@ -1,11 +1,40 @@
 
 var loaderUtils = require('loader-utils')
-var {parseHTML} = require('./parse')
+var { parseHTML } = require('./parse')
 module.exports = function (source) {
-  let tree = parseHTML(source)
-console.log('\n\n------ begin:  ------')
-console.log(tree.children[0].children[1])
-console.log('------ end:  ------\n\n')
   var options = loaderUtils.getOptions(this)
-return 'adfafd'
+  // this.resourcePath
+  let tree = parseHTML(source)
+  let template = null;
+  let script = null;
+  for (let node of tree.children) {
+    if (node.tagName == 'template') {
+      template = node
+    }
+    if (node.tagName == 'script') {
+      script = node.children[0].content
+    }
+  }
+  let createCode = ""
+  let visit = (node) => {
+    if(node.type ==='text') {
+      return JSON.stringify(node.content)
+    }
+    console.log(node)
+    let attrs = {}
+    for (let attribute of node.attributes) {
+      attrs[attribute.name] = attribute.value
+    }
+    let children = node.children.map(node => visit(node))
+    createCode += `
+    let node${node.tagName} = create("${node.tagName}",${JSON.stringify(attrs)},${children})
+    `
+    return createCode
+  }
+  console.log(visit(template))
+  return `
+class Carousel {
+  rernder() {}
+}
+`
 }
