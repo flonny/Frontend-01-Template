@@ -17,8 +17,8 @@ module.exports = function (source) {
   }
   let createCode = ""
   let visit = (node) => {
-    if(node.type ==='text') {
-      return JSON.stringify(node.content)
+    if (node.type === 'text') {
+      return node.content
     }
     console.log(node)
     let attrs = {}
@@ -31,10 +31,11 @@ module.exports = function (source) {
     `
     return createCode
   }
-  console.log(visit(template))
-  return `
-class Carousel {
-  rernder() {}
-}
-`
+  let r = `
+    import {createElement, Text, Wrapper} from './createElement'
+    class Carousel {
+      rernder() {${visit(template)}}
+    }
+  `
+  return r
 }
