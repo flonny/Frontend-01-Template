@@ -29,14 +29,14 @@ class Timeline {
         let t = Date.now() - this.startTime
         let activeAnimations = this.animations.filter(animation => !animation.finished)
         for (let animation of activeAnimations) {
-            let { object, property, template, start, end, duration, delay, timingFunction,addTime } = animation
+            let { object, property, template,valueFromprogression, duration, delay, timingFunction,addTime } = animation
 
             let progression = timingFunction((t - delay-addTime) / duration);
             if (t > duration + delay) {
                 animation.finished = true
                 progression = 1
             }
-            let value = start + progression * (end - start)
+            let value =animation.valueFromprogression(progression) 
             object[property] = template(value)
         }
         if (activeAnimations.length) { this.requestID = requestAnimationFrame(() => this.tick()) }
@@ -95,7 +95,24 @@ class Timeline {
 class Animation {
     constructor(object, property, template, start, end, duration, delay, timingFunction) {
         this.object = object;
-        this.template = template;
+        this.template = template||((v) => `rgba(${v.r},${v.g},${v.b},${v.a})`);
+        this.property = property;
+        this.start = start || 0;
+        this.end = end;
+        this.duration = duration;
+        this.delay = delay || 0;
+        this.timingFunction = timingFunction;
+
+    }
+    valueFromprogression(progression) {
+
+      return  this.start + progression * (this.end - this.start)
+    }
+}
+class ColorAnimation {
+    constructor(object, property, start, end, duration, delay, timingFunction,template, ) {
+        this.object = object;
+        this.template = template||((v) => `rgba(${v.r},${v.g},${v.b},${v.a})`);
         this.property = property;
         this.start = start;
         this.end = end;
@@ -103,6 +120,15 @@ class Animation {
         this.delay = delay || 0;
         this.timingFunction = timingFunction;
 
+    }
+    valueFromprogression(progression) {
+        return {
+            r: this.start.r + progression*(this.end.r - this.start.r),
+            g:  this.start.g + progression*(this.end.g - this.start.g),
+            b:  this.start.b + progression*(this.end.b - this.start.b),
+            a:  this.start.a + progression*(this.end.a - this.start.a),
+        }
+    //   return  this.start + progression * (this.end - this.start)
     }
 }
 
