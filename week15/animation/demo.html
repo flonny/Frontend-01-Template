@@ -11,17 +11,33 @@
             width: 100px;
             background: skyblue;
         }
+        #el2{
+            height: 100px;
+            width: 100px;
+            background: skyblue;
+            transition:  transform ease 5s;
+        }
     </style>
 </head>
 
 <body>
+   
+
+    
+    
+    
     <div id="el"></div>
+    <div id="el2"></div>
     <script src="./animation.js"></script>
-    <script>
+    <script src="./cubicBezier.js"></script>
+    <script type="module">
+        let linear = t=>t
+        let ease = cubicBezier(.25,.1,.25,1)
         let el = document.getElementById('el')
         let t1 = new Timeline
-        t1.add(new Animation(el.style, "transform",v=>`translateX(${v}px)`, 0, 200, 5000))
+        t1.add(new Animation(el.style, "transform",v=>`translateX(${v}px)`, 0, 200, 5000,0,ease))
         t1.start()
+        document.getElementById('el2').style.transform="translateX(200px)"
    </script>
 </body>
 

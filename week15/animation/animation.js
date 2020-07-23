@@ -23,16 +23,16 @@ class Timeline {
         this.animations = []
     }
     tick() {
-        let t = Date.now() -  this.startTime
+        let t = Date.now() - this.startTime
 
         for (let animation of this.animations) {
+            let { object, property, template, start, end,duration, delay, timingFunction } = animation
             if (t > animation.duration + animation.delay)
                 continue
-            let { object, property, template, start, end, delay, timingFunction } = animation
-           let proression = timeingFunction(t-dalay);
-           let value = start + progression
-            object[property] = template(timingFunction(start, end)(t - delay))
-            console.log( template(timingFunction(start, end)(t - delay)))
+    
+            let progression = timingFunction((t - delay)/duration);
+            let value = start + progression * (end - start)
+            object[property] = template(value)
         }
         requestAnimationFrame(() => this.tick())
     }
@@ -46,19 +46,15 @@ class Timeline {
     }
 }
 class Animation {
-    constructor( object, property,template,  start, end, duration, delay, timingFunction ) {
+    constructor(object, property, template, start, end, duration, delay, timingFunction) {
         this.object = object;
         this.template = template;
         this.property = property;
         this.start = start;
         this.end = end;
         this.duration = duration;
-        this.delay = delay||0;
-        this.timingFunction = timingFunction || ((start, end) => {
-            return (t) => {
-
-                return start + (t / duration) * (end - start)}
-        })
+        this.delay = delay || 0;
+        this.timingFunction = timingFunction;
 
     }
 }
